@@ -18,13 +18,14 @@ public class Raycast : MonoBehaviour
         bool isFreezedRotation = false;
         bool isFalling = false;
 
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, 0.75f)) {
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, 0.5f)) {
             Debug.DrawRay(transform.position, Vector3.down * hit.distance, Color.green);
         } else {
             Debug.DrawRay(transform.position, Vector3.down * 1, Color.red);
             isKinematic = false;
             isFreezedRotation = true;
             isFalling = true;
+            Debug.Log("No");
         }
         
         mover.ChangeFall(isKinematic, isFreezedRotation, isFalling);

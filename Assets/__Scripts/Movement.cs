@@ -94,12 +94,13 @@ public class Movement : MonoBehaviour
     public void ChangeFall(bool isKinematic = true, bool isFreezedRotation = false, bool isFalling = false) {
         rigidbody.freezeRotation = isFreezedRotation;
         rigidbody.isKinematic = isKinematic;
-        if (isFalling) {
+        /*if (isFalling) {
             direction = Direction.falling;
         }
-        else {
+        else
+        {
             direction = Direction.idle;
-        }
+        }*/
     }
 
     IEnumerator Roll(Vector3 anchor, Vector3 axis) {
