@@ -46,6 +46,7 @@ public class Movement : MonoBehaviour
     }
 
     void FixedUpdate() {
+        if (direction == Direction.falling && !checker.IsFalling()) ChangeDirectionToIdle();
         if (direction != Direction.idle) return;
 
         ReadInput();
@@ -76,10 +77,15 @@ public class Movement : MonoBehaviour
         }
     }
     void Assemble(Vector3 dir) {
+        int angular = 90;
         var anchor = transform.position + (Vector3.down + dir) * 0.5f;
         var axis = Vector3.Cross(Vector3.up, dir);
-        if (checker.IsDirectionBlocked(dir)) anchor.y += 1;
-        StartCoroutine(Roll(anchor, axis));
+        if (checker.IsDirectionBlocked(dir))
+        {
+            anchor.y += 1;
+            angular = 180;
+        }
+        StartCoroutine(Roll(anchor, axis, angular));
     }
 
     public Vector3 GetLevelPosOnGrid(float mult = -1) {
@@ -95,32 +101,32 @@ public class Movement : MonoBehaviour
         return lPos;
     }
 
-    public void ChangeFall(bool isKinematic = true, bool isFreezedRotation = false, bool isFalling = false)
+    public void ChangeDirectionToFalling()
     {
-        if (isFreezedRotation) {
-            rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
-        } else {
-            rigidbody.constraints = RigidbodyConstraints.FreezeRotationY;
-        }
+        rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+        rigidbody.isKinematic = false;
 
-        rigidbody.isKinematic = isKinematic;
-
-        if (isFalling) {
-            direction = Direction.falling;
-        } else {
-            transform.position = GetLevelPosOnGrid(1);
-            direction = Direction.idle;
-        }
+        direction = Direction.falling;
     }
 
-    IEnumerator Roll(Vector3 anchor, Vector3 axis) {
+    public void ChangeDirectionToIdle() {
+        rigidbody.constraints = RigidbodyConstraints.FreezeRotationY;
+        rigidbody.isKinematic = true;
 
-        for (int i = 0; i < (90 / rollSpeed); i++) {
+        transform.position = GetLevelPosOnGrid(1);
+        direction = Direction.idle;
+    }
+
+    IEnumerator Roll(Vector3 anchor, Vector3 axis, int angular) {
+
+        for (int i = 0; i < (angular/ rollSpeed); i++) {
             transform.RotateAround(anchor, axis, rollSpeed);
             yield return new WaitForFixedUpdate();
         }
 
-        transform.position = GetLevelPosOnGrid(1);
-        //direction = Direction.idle;
+        if (checker.IsFalling()) 
+            ChangeDirectionToFalling();
+        else 
+            ChangeDirectionToIdle();
     }
 }

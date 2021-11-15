@@ -14,17 +14,11 @@ public class Raycast : MonoBehaviour
 
     void FixedUpdate()
     {
-        bool isKinematic = true;
-        bool isFreezedRotation = false;
-        bool isFalling = false;
+        
+    }
 
-        if (!Physics.Raycast(transform.position, Vector3.down, 0.5f)) {
-            isKinematic = false;
-            isFreezedRotation = true;
-            isFalling = true;
-        }
-
-        mover.ChangeFall(isKinematic, isFreezedRotation, isFalling);
+    public bool IsFalling() {
+        return !Physics.Raycast(transform.position, Vector3.down, 1);
     }
 
     public bool IsDirectionBlocked(Vector3 dir) {
