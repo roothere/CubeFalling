@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Raycast : MonoBehaviour
 {
@@ -13,25 +14,20 @@ public class Raycast : MonoBehaviour
 
     void FixedUpdate()
     {
-
         bool isKinematic = true;
         bool isFreezedRotation = false;
         bool isFalling = false;
 
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, 0.5f)) {
-            Debug.DrawRay(transform.position, Vector3.down * hit.distance, Color.green);
-        } else {
-            Debug.DrawRay(transform.position, Vector3.down * 1, Color.red);
+        if (!Physics.Raycast(transform.position, Vector3.down, 0.5f)) {
             isKinematic = false;
             isFreezedRotation = true;
             isFalling = true;
-            Debug.Log("No");
         }
-        
+
         mover.ChangeFall(isKinematic, isFreezedRotation, isFalling);
-        /*if (Physics.Raycast(transform.position, Vector3.down, out hit, 1))
-        {
-            
-        }*/
+    }
+
+    public bool IsDirectionBlocked(Vector3 dir) {
+        return Physics.Raycast(transform.position, dir, 0.5f);
     }
 }

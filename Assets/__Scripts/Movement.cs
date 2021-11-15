@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 public enum Direction {
     rotateForward,
@@ -12,9 +13,10 @@ public enum Direction {
 
 public class Movement : MonoBehaviour
 {
+    //public static UnityEvent<bool> OnFallingChange;
+
     [Header("Set in Inspector")] 
     public float rollSpeed = 10;
-    [SerializeField]
     public float gridMult = 1;
 
 
@@ -23,6 +25,7 @@ public class Movement : MonoBehaviour
     public Direction direction = Direction.idle;
 
     private Rigidbody rigidbody;
+    private Raycast checker;
     private Vector3 _axis;
 
     public Vector3 levelPos {
@@ -39,9 +42,10 @@ public class Movement : MonoBehaviour
     void Awake()
     {
         rigidbody = GetComponent<Rigidbody>();
+        checker = GetComponent<Raycast>();
     }
 
-    void Update() {
+    void FixedUpdate() {
         if (direction != Direction.idle) return;
 
         ReadInput();
@@ -58,7 +62,6 @@ public class Movement : MonoBehaviour
                 Assemble(Vector3.right);
                 break;
             default:
-                direction = Direction.idle;
                 switch (_axis.z = Input.GetAxisRaw("Vertical")) {
                     case 1:
                         direction = Direction.rotateForward;
@@ -75,6 +78,7 @@ public class Movement : MonoBehaviour
     void Assemble(Vector3 dir) {
         var anchor = transform.position + (Vector3.down + dir) * 0.5f;
         var axis = Vector3.Cross(Vector3.up, dir);
+        if (checker.IsDirectionBlocked(dir)) anchor.y += 1;
         StartCoroutine(Roll(anchor, axis));
     }
 
@@ -91,26 +95,32 @@ public class Movement : MonoBehaviour
         return lPos;
     }
 
-    public void ChangeFall(bool isKinematic = true, bool isFreezedRotation = false, bool isFalling = false) {
-        rigidbody.freezeRotation = isFreezedRotation;
-        rigidbody.isKinematic = isKinematic;
-        /*if (isFalling) {
-            direction = Direction.falling;
+    public void ChangeFall(bool isKinematic = true, bool isFreezedRotation = false, bool isFalling = false)
+    {
+        if (isFreezedRotation) {
+            rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+        } else {
+            rigidbody.constraints = RigidbodyConstraints.FreezeRotationY;
         }
-        else
-        {
+
+        rigidbody.isKinematic = isKinematic;
+
+        if (isFalling) {
+            direction = Direction.falling;
+        } else {
+            transform.position = GetLevelPosOnGrid(1);
             direction = Direction.idle;
-        }*/
+        }
     }
 
     IEnumerator Roll(Vector3 anchor, Vector3 axis) {
 
         for (int i = 0; i < (90 / rollSpeed); i++) {
             transform.RotateAround(anchor, axis, rollSpeed);
-            yield return new WaitForSeconds(0.01f);
+            yield return new WaitForFixedUpdate();
         }
 
         transform.position = GetLevelPosOnGrid(1);
-        direction = Direction.idle;
+        //direction = Direction.idle;
     }
 }

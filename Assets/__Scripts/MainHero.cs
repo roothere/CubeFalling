@@ -5,14 +5,14 @@ using UnityEngine;
 public class MainHero : MonoBehaviour, IMover
 {
     private Direction direction;
-    private Movement move;
+    private Movement movement;
 
     void Awake() {
-        move = GetComponent<Movement>();
+        movement = GetComponent<Movement>();
     }
     public Direction GetFacing()
     {
-        return move.direction;
+        return movement.direction;
     }
 
     public bool moving
@@ -21,19 +21,19 @@ public class MainHero : MonoBehaviour, IMover
     }
     public float GetSpeed()
     {
-        return move.rollSpeed;
+        return movement.rollSpeed;
     }
 
     public float gridMult
     {
-        get { return move.gridMult; }
+        get { return movement.gridMult; }
     }
     public Vector3 levelPos {
-        get { return move.levelPos; }
-        set { move.levelPos = value; }
+        get { return movement.levelPos; }
+        set { movement.levelPos = value; }
     }
     public Vector3 GetLevelPosOnGrid(float mult = -1)
     {
-        return move.GetLevelPosOnGrid(mult);
+        return movement.GetLevelPosOnGrid(mult);
     }
 }

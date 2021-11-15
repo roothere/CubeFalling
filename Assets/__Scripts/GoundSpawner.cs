@@ -11,6 +11,7 @@ public class GoundSpawner : MonoBehaviour
     public int groundLenghtZ = 20;
 
     public GameObject cubePrefab;
+    public GameObject playerPrefab;
 
     void Awake()
     {
@@ -19,15 +20,21 @@ public class GoundSpawner : MonoBehaviour
             GROUND_ANCHOR = go.transform;
         }
 
-
         for (int z = 1 - groundLenghtZ / 2; z < groundLenghtZ / 2; z++) {
-            for (int x = 1 - groundLenghtX / 2; x < groundLenghtZ / 2; x++)
+            for (int x = 1 - groundLenghtX / 2; x < groundLenghtX / 2; x++)
             {
                 GameObject go = Instantiate<GameObject>(cubePrefab);
                 go.transform.SetParent(GROUND_ANCHOR);
                 go.transform.position = new Vector3(x, -1, z);
             }
         }
+        
+        Invoke("SpawnHero", 0.5f);
     }
 
+    void SpawnHero()
+    {
+        GameObject goPlayer = Instantiate(playerPrefab);
+        goPlayer.transform.position = new Vector3(0, 0, 0);
+    }
 }
