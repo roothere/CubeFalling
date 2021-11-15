@@ -15,7 +15,7 @@ public class GridMove : MonoBehaviour
         if (!mover.moving) {
             return;
         }
-
+        Debug.Log("GRID");
         Direction facing = mover.GetFacing();
 
         Vector3 lPos = mover.levelPos;
@@ -24,13 +24,13 @@ public class GridMove : MonoBehaviour
         float delta = 0;
         float deltaHigh = 0;
 
-        if (facing == Direction.rotateBack || facing == Direction.rotateForward) {
+        if (facing == Direction.rotateLeft || facing == Direction.rotateRight) {
             delta = lPosGrid.z - lPos.z;
         } else {
             delta = lPosGrid.x - lPos.x;
         }
 
-        if (facing == Direction.falling) {
+        if (facing == Direction.fall) {
             deltaHigh = lPosGrid.y - lPos.y;
         }
 
@@ -50,13 +50,13 @@ public class GridMove : MonoBehaviour
             moveHigh = -moveHigh;
         }
 
-        if (facing == Direction.rotateBack || facing == Direction.rotateForward) {
+        if (facing == Direction.rotateLeft || facing == Direction.rotateRight) {
             lPos.z += move;
         } else {
             lPos.x += move;
         }
 
-        if (facing == Direction.falling) {
+        if (facing == Direction.fall) {
             lPos.y += moveHigh;
         }
 

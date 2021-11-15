@@ -34,6 +34,6 @@ public class MainHero : MonoBehaviour, IMover
     }
     public Vector3 GetLevelPosOnGrid(float mult = -1)
     {
-        return movement.GetLevelPosOnGrid(mult);
+        return movement.PosOnGrid(mult);
     }
 }

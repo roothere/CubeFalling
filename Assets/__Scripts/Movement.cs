@@ -7,7 +7,7 @@ public enum Direction {
     rotateBack,
     rotateLeft,
     rotateRight,
-    falling,
+    fall,
     idle
 }
 
@@ -46,7 +46,7 @@ public class Movement : MonoBehaviour
     }
 
     void FixedUpdate() {
-        if (direction == Direction.falling && !checker.IsFalling()) ChangeDirectionToIdle();
+        if (direction == Direction.fall && !checker.IsFalling()) ChangeDirectionToIdle();
         if (direction != Direction.idle) return;
 
         ReadInput();
@@ -88,7 +88,7 @@ public class Movement : MonoBehaviour
         StartCoroutine(Roll(anchor, axis, angular));
     }
 
-    public Vector3 GetLevelPosOnGrid(float mult = -1) {
+    public Vector3 PosOnGrid(float mult = -1) {
         if (mult == -1) {
             mult = gridMult;
         }
@@ -101,19 +101,19 @@ public class Movement : MonoBehaviour
         return lPos;
     }
 
-    public void ChangeDirectionToFalling()
+    public void ChangeDirectionToFall()
     {
         rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
         rigidbody.isKinematic = false;
 
-        direction = Direction.falling;
+        direction = Direction.fall;
     }
 
     public void ChangeDirectionToIdle() {
         rigidbody.constraints = RigidbodyConstraints.FreezeRotationY;
         rigidbody.isKinematic = true;
 
-        transform.position = GetLevelPosOnGrid(1);
+        //transform.position = PosOnGrid();
         direction = Direction.idle;
     }
 
@@ -125,7 +125,7 @@ public class Movement : MonoBehaviour
         }
 
         if (checker.IsFalling()) 
-            ChangeDirectionToFalling();
+            ChangeDirectionToFall();
         else 
             ChangeDirectionToIdle();
     }
