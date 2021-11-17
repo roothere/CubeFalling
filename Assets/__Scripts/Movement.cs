@@ -80,12 +80,14 @@ public class Movement : MonoBehaviour
         Vector3 axis = Vector3.Cross(Vector3.up, dir);
 
         if (checker.IsDirectionBlocked(curPos, dir))
-            if (checker.IsDirectionLift(curPos, dir)) {
+        {
+            if (checker.IsDirectionLift(curPos, dir))
+            {
                 anchor += Vector3.up;
                 angular = 180;
-            }
-
-        //if (checker.IsDirectionPartiallyBlocked(curPos, dir))
+            } else
+                anchor += Vector3.up;
+        }
 
         StartCoroutine(Roll(anchor, axis, angular));
     }
