@@ -3,10 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 public enum Direction {
-    rotateForward,
-    rotateBack,
-    rotateLeft,
-    rotateRight,
+    rotate,
     fall,
     idle
 }
@@ -46,7 +43,7 @@ public class Movement : MonoBehaviour
     }
 
     void FixedUpdate() {
-        if (direction == Direction.fall && !checker.IsFalling()) ChangeDirectionToIdle();
+        if (direction == Direction.fall && !checker.IsFalling(transform.position)) ChangeDirectionToIdle();
         if (direction != Direction.idle) return;
 
         ReadInput();
@@ -55,36 +52,41 @@ public class Movement : MonoBehaviour
     void ReadInput() {
         switch (_axis.x = -Input.GetAxisRaw("Horizontal")) {
             case 1:
-                direction = Direction.rotateLeft;
                 Assemble(Vector3.left);
                 break;
             case -1:
-                direction = Direction.rotateRight;
                 Assemble(Vector3.right);
                 break;
             default:
                 switch (_axis.z = Input.GetAxisRaw("Vertical")) {
                     case 1:
-                        direction = Direction.rotateForward;
                         Assemble(Vector3.forward);
                         break;
                     case -1:
-                        direction = Direction.rotateBack;
                         Assemble(Vector3.back);
                         break;
                 }
                 break;
         }
     }
-    void Assemble(Vector3 dir) {
+    void Assemble(Vector3 dir)
+    {
+        if (checker.IsDirectionFullBlocked(transform.position, dir)) return;
+        
         int angular = 90;
-        var anchor = transform.position + (Vector3.down + dir) * 0.5f;
-        var axis = Vector3.Cross(Vector3.up, dir);
-        if (checker.IsDirectionBlocked(dir))
-        {
-            anchor.y += 1;
-            angular = 180;
-        }
+
+        Vector3 curPos = transform.position;
+        Vector3 anchor = curPos + (Vector3.down + dir) * 0.5f;
+        Vector3 axis = Vector3.Cross(Vector3.up, dir);
+
+        if (checker.IsDirectionBlocked(curPos, dir))
+            if (checker.IsDirectionLift(curPos, dir)) {
+                anchor += Vector3.up;
+                angular = 180;
+            }
+
+        //if (checker.IsDirectionPartiallyBlocked(curPos, dir))
+
         StartCoroutine(Roll(anchor, axis, angular));
     }
 
@@ -113,18 +115,25 @@ public class Movement : MonoBehaviour
         rigidbody.constraints = RigidbodyConstraints.FreezeRotationY;
         rigidbody.isKinematic = true;
 
-        //transform.position = PosOnGrid();
+        transform.position = PosOnGrid();
         direction = Direction.idle;
     }
 
+    public void ChangeDirectionToRotate()
+    {
+        direction = Direction.rotate;
+    }
+
     IEnumerator Roll(Vector3 anchor, Vector3 axis, int angular) {
+
+        ChangeDirectionToRotate();
 
         for (int i = 0; i < (angular/ rollSpeed); i++) {
             transform.RotateAround(anchor, axis, rollSpeed);
             yield return new WaitForFixedUpdate();
         }
 
-        if (checker.IsFalling()) 
+        if (checker.IsFalling(transform.position)) 
             ChangeDirectionToFall();
         else 
             ChangeDirectionToIdle();

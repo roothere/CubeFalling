@@ -12,23 +12,20 @@ public class GridMove : MonoBehaviour
     }
 
     void FixedUpdate() {
-        if (!mover.moving) {
+        if (!mover.idling) {
             return;
         }
-        Debug.Log("GRID");
+        Debug.Log("GRID_START");
         Direction facing = mover.GetFacing();
 
         Vector3 lPos = mover.levelPos;
-        Vector3 lPosGrid = mover.GetLevelPosOnGrid();
+        Vector3 lPosGrid = mover.PosOnGrid();
 
         float delta = 0;
         float deltaHigh = 0;
 
-        if (facing == Direction.rotateLeft || facing == Direction.rotateRight) {
-            delta = lPosGrid.z - lPos.z;
-        } else {
-            delta = lPosGrid.x - lPos.x;
-        }
+        delta = lPosGrid.z - lPos.z;
+        delta = lPosGrid.x - lPos.x;
 
         if (facing == Direction.fall) {
             deltaHigh = lPosGrid.y - lPos.y;
@@ -38,7 +35,7 @@ public class GridMove : MonoBehaviour
             return;
         }
 
-        float move = mover.GetSpeed() * Time.fixedDeltaTime;
+        float move = mover.GetRotatingSpeed() * Time.fixedDeltaTime;
         move = Mathf.Min(move, Mathf.Abs(delta));
         float moveHigh = Mathf.Min(move, Mathf.Abs(deltaHigh));
         
@@ -50,11 +47,8 @@ public class GridMove : MonoBehaviour
             moveHigh = -moveHigh;
         }
 
-        if (facing == Direction.rotateLeft || facing == Direction.rotateRight) {
-            lPos.z += move;
-        } else {
-            lPos.x += move;
-        }
+        lPos.z += move;
+        lPos.x += move;
 
         if (facing == Direction.fall) {
             lPos.y += moveHigh;

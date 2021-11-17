@@ -3,9 +3,10 @@ using UnityEngine;
 public interface IMover
 {
     Direction GetFacing();
-    bool moving { get; }
-    float GetSpeed();
+    bool idling { get; }
+    float GetRotatingSpeed();
+    float GetFallingSpeed();
     float gridMult { get; }
     Vector3 levelPos { get; set; }
-    Vector3 GetLevelPosOnGrid(float mult = -1);
+    Vector3 PosOnGrid(float mult = -1);
 }
